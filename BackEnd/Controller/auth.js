@@ -21,12 +21,14 @@ exports.registerController = async (req, res) => {
       email,
       password: hashedPassword,
     });
-
     await customer.save();
-
-    return res
-      .status(200)
-      .send({ success: true, message: "Customer Registered Successfully" });
+    this.sendToken(
+      customer,
+      res.status(200).send({ 
+        success: true, 
+        message: "Customer Registered Successfully" 
+      })
+    );
   } catch (error) {
     console.error(error);
     res.status(500).send("Server Error");
@@ -34,35 +36,39 @@ exports.registerController = async (req, res) => {
 };
 
 //Login
-exports.loginController = async (req,res) => {
-    const { email, password } = req.body;
+exports.loginController = async (req, res) => {
+  const { email, password } = req.body;
 
-    try {
-      const customer = await userModel.findOne({ email });
-      if (!customer) {
-        return res.status(400).json({ message: "Invalid Credentials" });
-      }
-  
-      const isMatch = await decryptPassword(password, customer.password);
-      if (!isMatch) {
-        return res.status(400).json({ message: "Invalid Credentials" });
-      }
-  
+  try {
+    const customer = await userModel.findOne({ email });
+    if (!customer) {
+      return res.status(400).json({ message: "Invalid Credentials" });
+    }
+
+    const isMatch = await decryptPassword(password, customer.password);
+    if (!isMatch) {
+      return res.status(400).json({ message: "Invalid Credentials" });
+    }
+
     //Token
-    const token = generateToken(customer._id);  
-
+    this.sendToken(
+      customer,
       res.status(200).json({
         success: true,
         message: "Login Successful",
-        token,
-      });
-    } catch (error) {
-      console.error(error);
-      res.status(500).send("Server Error");
-    }
+      })
+    );
+  } catch (error) {
+    console.error(error);
+    res.status(500).send("Server Error");
+  }
 };
 
 //Logout
-exports.logoutController = async (req,res) => {
-    res.clearcookie()
+exports.logoutController = async (req, res) => {
+  res.clearCookie("refreshToken");
+  return res.status(200).json({
+    success: true,
+    message: "Logout Succesfully",
+  });
 };

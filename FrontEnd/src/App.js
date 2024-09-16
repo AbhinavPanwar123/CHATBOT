@@ -1,17 +1,44 @@
-import React from 'react'
-import {BrowserRouter,Routes,Route} from 'react-router-dom'
+import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
+import { useMemo } from "react";
+import { CssBaseline, ThemeProvider } from "@mui/material";
+import { createTheme } from "@mui/material/styles";
+import { Toaster } from "react-hot-toast";
+import { themeSettings } from "./theme";
 
-const App = () => {
+import Homepage from "./Pages/Homepage";
+import Register from "./Pages/Register";
+import Login from "./Pages/Login";
+import Summary from "./Pages/Summary";
+import Paragraph from "./Pages/Paragraph";
+import ChatBot from "./Pages/ChatBot";
+import JsConverter from "./Pages/JsConverter";
+import ScifiImage from "./Pages/ScifiImage";
+import Navbar from "./Component/Navbar";
+
+function App() {
+  const theme = useMemo(() => createTheme(themeSettings()), []);
+
   return (
-    <div>
-      <BrowserRouter>
-       <Routes>
-        <Route path='/' element />
-       </Routes>
-      </BrowserRouter>
-    </div>
-  )
+    <>
+      <ThemeProvider theme={theme}>
+        <CssBaseline />
+        <Router>
+          <Navbar />
+          <Toaster />
+          <Routes>
+            <Route path="/" element={<Homepage />} />
+            <Route path="/register" element={<Register />} />
+            <Route path="/login" element={<Login />} />
+            <Route path="/summary" element={<Summary />} />
+            <Route path="/paragraph" element={<Paragraph />} />
+            <Route path="/chatbot" element={<ChatBot />} />
+            <Route path="/js-converter" element={<JsConverter />} />
+            <Route path="/scifi-image" element={<ScifiImage />} />
+          </Routes>
+        </Router>
+      </ThemeProvider>
+    </>
+  );
 }
 
-export default App
-
+export default App;
